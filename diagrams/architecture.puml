@@ -1,0 +1,51 @@
+@startuml architecture
+!theme plain
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName monospace
+skinparam ArrowColor #444444
+skinparam componentBorderColor #444444
+skinparam nodeBorderColor #444444
+skinparam packageBorderColor #888888
+
+title OpenClaw Quickstart — System Architecture
+
+actor "You" as user
+
+package "Your Machine (macOS / Windows / Linux)" {
+
+    package "Docker Container" {
+        component "entrypoint.sh\n(startup config)" as entrypoint
+        component "OpenClaw Gateway\nws://0.0.0.0:18789" as gateway
+        component "Browser Server\n127.0.0.1:18791" as browserserver
+        entrypoint --> gateway : starts
+    }
+
+    folder "./data (bind mount)" {
+        file "config/openclaw.json\n(token, settings)" as config
+        folder "state/" as state
+        folder "workspace/\n(AGENTS.md, SOUL.md...)" as workspace
+    }
+
+    gateway --> config : reads/writes
+    gateway --> state : session data
+    gateway --> workspace : agent files
+
+    node "Browser\nhttp://127.0.0.1:18789" as browser
+}
+
+cloud "LLM Provider" {
+    component "Anthropic / OpenAI\nAPI" as llmapi
+}
+
+user --> browser : opens Control UI
+browser --> gateway : WebSocket (token auth)
+gateway --> llmapi : API key (set in UI)
+
+note right of gateway
+  Port 18789 bound to
+  127.0.0.1 on host.
+  Not reachable from
+  other devices.
+end note
+
+@enduml

@@ -1,0 +1,45 @@
+@startuml sequence
+!theme plain
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName monospace
+skinparam sequenceArrowColor #444444
+skinparam sequenceBoxBorderColor #888888
+skinparam sequenceParticipantBorderColor #444444
+
+title OpenClaw Quickstart — Request Flow
+
+actor "You" as user
+participant "Browser\nControl UI" as ui
+participant "OpenClaw Gateway\n(Docker)" as gateway
+participant "entrypoint.sh" as entrypoint
+database "./data/config\nopenclaw.json" as config
+participant "LLM Provider\n(Anthropic / OpenAI)" as llm
+
+== Container Startup ==
+entrypoint -> config : merge required settings\n(dangerouslyAllow..., workspace path)
+entrypoint -> gateway : exec openclaw gateway run
+
+== First Connection ==
+user -> ui : open http://127.0.0.1:18789/?auth=<token>
+ui -> gateway : WebSocket connect + token
+gateway -> config : validate token
+config --> gateway : token OK
+gateway --> ui : connected
+
+user -> gateway : approve device pairing\n(openclaw devices approve <id>)
+gateway --> ui : pairing confirmed
+
+== Chat Request ==
+user -> ui : send message
+ui -> gateway : WebSocket message
+gateway -> config : load agent settings\n+ workspace files
+gateway -> llm : API request\n(with API key from settings)
+llm --> gateway : streamed response
+gateway --> ui : stream to browser
+ui --> user : display response
+
+== Data Persistence ==
+gateway -> config : write updated config
+gateway -> "./data/state/" as state : write session data
+
+@enduml
