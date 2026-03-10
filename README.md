@@ -1,10 +1,36 @@
 # OpenClaw Quickstart
 
-A containerized [OpenClaw](https://openclaw.ai) setup designed to get you from zero to a running AI gateway with as little pain as possible. No prior Docker experience needed, no manual installs, no "works on my machine" nonsense.
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
+![Docker](https://img.shields.io/badge/docker-required-2496ED?logo=docker&logoColor=white)
+![License](https://img.shields.io/github/license/M4K4TT4CK/openclaw-quickstart)
 
-If you can copy and paste, you can do this.
+> A containerized [OpenClaw](https://openclaw.ai) setup designed to get you from zero to a running AI gateway with as little pain as possible. No prior Docker experience needed, no manual installs, no "works on my machine" nonsense.
+>
+> If you can copy and paste, you can do this.
 
-> **Primary platform:** macOS. Windows and Linux notes are included where the steps differ.
+---
+
+## What is this?
+
+[OpenClaw](https://openclaw.ai) is a self-hosted AI gateway. This repo wraps it in Docker so you can spin it up on any machine without touching your system Python, Node, or anything else. Your settings, token, and agent workspace all persist in a local `./data` folder that never touches git.
+
+Think of it as: **your AI, your machine, your rules.**
+
+---
+
+## Architecture
+
+### System Layout
+
+![System Architecture](./diagrams/architecture.png)
+
+> Source: [architecture.puml](./diagrams/architecture.puml). View or edit with the [PlantUML extension](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml) in VSCode.
+
+### Request Flow
+
+![Request Sequence](./diagrams/sequence.png)
+
+> Source: [sequence.puml](./diagrams/sequence.puml).
 
 ---
 
@@ -34,13 +60,13 @@ You should see a version number. If not, install Docker Desktop first.
 **macOS / Linux:**
 ```bash
 git clone https://github.com/M4K4TT4CK/openclaw-quickstart.git
-cd OpenClaw
+cd openclaw-quickstart
 ```
 
 **Windows (PowerShell):**
 ```powershell
 git clone https://github.com/M4K4TT4CK/openclaw-quickstart.git
-cd OpenClaw
+cd openclaw-quickstart
 ```
 
 ### 2. Build and start the container
@@ -49,7 +75,9 @@ cd OpenClaw
 docker compose up -d
 ```
 
-This will build the Docker image (takes a few minutes the first time) and start the container in the background.
+This builds the Docker image (takes a few minutes the first time) and starts the container in the background. Grab a coffee.
+
+> **Note:** This uses `docker compose` (no hyphen), which is Docker Compose V2 and comes bundled with Docker Desktop on macOS and Windows. On Linux, install the [Compose plugin](https://docs.docker.com/compose/install/linux/). If you only have the older `docker-compose` (with hyphen), [upgrade to V2](https://docs.docker.com/compose/migrate/).
 
 To check it started successfully:
 ```bash
@@ -70,7 +98,7 @@ http://127.0.0.1:18789
 
 ### 4. Get your auth token
 
-The gateway requires a token to connect. Retrieve it by running:
+The gateway generates a unique token on first run and requires it to connect. Retrieve it:
 
 **macOS / Linux:**
 ```bash
@@ -94,13 +122,15 @@ http://127.0.0.1:18789/?auth=abc123yourtokenhere
 
 ### 5. Approve the device pairing
 
-The first time you connect, the UI will show a **pairing required** screen. Run these two commands in your terminal:
+The first time you connect, the UI will show a **pairing required** screen. This is by design; it stops anything other than your approved browser from connecting.
+
+These commands run inside the container, so they are the same on macOS, Windows, and Linux:
 
 ```bash
-# List pending pairing requests and copy the ID shown
+# See what is waiting for approval
 docker compose exec openclaw openclaw devices list
 
-# Approve the request (replace <requestId> with the ID from above)
+# Approve it (replace <requestId> with the ID shown above)
 docker compose exec openclaw openclaw devices approve <requestId>
 ```
 
@@ -108,7 +138,7 @@ Go back to the browser; you should now be connected.
 
 ### 6. Add your API key
 
-In the Control UI, go to **Settings** and add your LLM provider API key (e.g. your Anthropic or OpenAI key). This is required before you can chat.
+In the Control UI, go to **Settings** and add your LLM provider API key (e.g. Anthropic or OpenAI). This is required before you can chat. Your key is stored locally in `./data` and never committed to git.
 
 ---
 
@@ -148,7 +178,14 @@ docker compose down; Remove-Item -Recurse -Force .\data
 
 ## Configuration
 
-State and config are persisted in the `./data` folder so your setup, including your auth token and API keys, survives container restarts and rebuilds. You will only need to pair your device once.
+Everything persists in `./data` on your machine. It survives container restarts and rebuilds. The only thing that wipes it is the nuclear command above.
+
+```
+./data/
+  config/openclaw.json   your token, gateway settings, API key refs
+  state/                 session history
+  workspace/             agent files (AGENTS.md, SOUL.md, MEMORY.md...)
+```
 
 > **Security note:** The gateway port (18789) is bound to `127.0.0.1` only; it is accessible from your machine alone, not from other devices on your network or the internet. Each user who builds this gets their own unique auth token generated locally; no tokens are stored in this repo. The `dangerouslyAllowHostHeaderOriginFallback` flag is required to make the Control UI work inside Docker and is safe as long as the port is not publicly exposed.
 
