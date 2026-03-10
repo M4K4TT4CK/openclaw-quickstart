@@ -197,6 +197,15 @@ Everything that matters persists in `./data` on your machine. Container restarts
 
 > **Security note:** Port 18789 is bound to `127.0.0.1` only. That means it is reachable from your machine and nowhere else. No other device on your network can hit it, and neither can the internet. The `dangerouslyAllowHostHeaderOriginFallback` flag sounds scary but is safe here since the port is never publicly exposed; it is required to make the Control UI work inside Docker.
 
+### How the container starts
+
+When the container launches, `entrypoint.sh` runs first. It merges a few required settings into `openclaw.json` (creating the file if it does not exist yet), then hands off to the gateway with two flags:
+
+- `--allow-unconfigured`: lets the gateway start before you have added an API key, so you can open the UI and add one through Settings rather than having to pre-configure a file.
+- `--bind lan`: tells the gateway to listen on all network interfaces inside the container. Docker then restricts what is actually reachable from the outside via the `127.0.0.1:18789:18789` port mapping in `docker-compose.yml`, so nothing leaks out of your machine.
+
+---
+
 Want to move the data somewhere else? Override the paths in `docker-compose.yml`:
 
 | Variable | Default |
