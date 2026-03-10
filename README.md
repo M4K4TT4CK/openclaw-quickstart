@@ -61,14 +61,7 @@ Six steps. Most of them are just copy and paste.
 
 ### 1. Clone the repo
 
-**macOS / Linux:**
 ```bash
-git clone https://github.com/M4K4TT4CK/openclaw-quickstart.git
-cd openclaw-quickstart
-```
-
-**Windows (PowerShell):**
-```powershell
 git clone https://github.com/M4K4TT4CK/openclaw-quickstart.git
 cd openclaw-quickstart
 ```
