@@ -5,19 +5,25 @@ Personal LLM build powered by [OpenClaw](https://openclaw.ai). Runs a self-hoste
 ## Requirements
 
 - Docker and Docker Compose
+- An API key for your preferred LLM provider (e.g. Anthropic, OpenAI)
 
 ## Quick Start
 
 ```bash
-# Build and start the container
+# 1. Clone the repo
+git clone https://github.com/your-username/OpenClaw.git
+cd OpenClaw
+
+# 2. Build and start the container
 docker compose up -d
 
-# First-time setup (run once after first start)
-docker compose exec openclaw openclaw onboard
-
-# Open the Control UI
+# 3. Open the Control UI to complete setup
 open http://127.0.0.1:18789
 ```
+
+> The gateway starts in `--allow-unconfigured` mode so the container runs before any config is set. Complete setup — including adding your API key — via the Control UI at the URL above.
+
+> Each user brings their own API key. No secrets are stored in this repo.
 
 ## Useful Commands
 

@@ -1,0 +1,5 @@
+# Docker volume data (contains auth tokens and config)
+data/
+
+# OS
+.DS_Store
