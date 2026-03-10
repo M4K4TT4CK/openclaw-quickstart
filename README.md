@@ -2,6 +2,8 @@
 
 Personal LLM build powered by [OpenClaw](https://openclaw.ai). Runs a self-hosted AI gateway with a browser-based Control UI, fully containerized with Docker.
 
+> **Primary platform:** macOS. Windows and Linux notes are included where the steps differ.
+
 ---
 
 ## Requirements
@@ -10,6 +12,7 @@ Before you begin, make sure you have the following installed:
 
 - **Docker Desktop** ([Download here](https://www.docker.com/products/docker-desktop/)). This includes both Docker and Docker Compose.
 - **An API key** from your preferred LLM provider (e.g. [Anthropic](https://console.anthropic.com/), [OpenAI](https://platform.openai.com/))
+- **Git** ([Download here](https://git-scm.com/downloads))
 
 To verify Docker is installed, open a terminal and run:
 ```bash
@@ -17,15 +20,23 @@ docker --version
 ```
 You should see a version number. If not, install Docker Desktop first.
 
+> **Windows:** Use PowerShell or Windows Terminal. Docker Desktop requires WSL2; the installer will guide you through enabling it.
+> **Linux:** Install [Docker Engine](https://docs.docker.com/engine/install/) and the Docker Compose plugin. Docker Desktop is optional.
+
 ---
 
 ## Setup
 
 ### 1. Clone the repo
 
-Open a terminal and run:
-
+**macOS / Linux:**
 ```bash
+git clone https://github.com/your-username/OpenClaw.git
+cd OpenClaw
+```
+
+**Windows (PowerShell):**
+```powershell
 git clone https://github.com/your-username/OpenClaw.git
 cd OpenClaw
 ```
@@ -58,7 +69,14 @@ http://127.0.0.1:18789
 ### 4. Get your auth token
 
 The gateway requires a token to connect. Retrieve it by running:
+
+**macOS / Linux:**
 ```bash
+docker compose exec openclaw cat /data/config/openclaw.json
+```
+
+**Windows (PowerShell):**
+```powershell
 docker compose exec openclaw cat /data/config/openclaw.json
 ```
 
@@ -94,6 +112,7 @@ In the Control UI, go to **Settings** and add your LLM provider API key (e.g. yo
 
 ## Useful Commands
 
+**macOS / Linux:**
 ```bash
 # View live logs
 docker compose logs -f
@@ -106,6 +125,21 @@ docker compose down
 
 # WARNING: deletes all data including machines, API keys, and token. Cannot be undone.
 docker compose down && rm -rf ./data
+```
+
+**Windows (PowerShell):**
+```powershell
+# View live logs
+docker compose logs -f
+
+# Check gateway status
+docker compose exec openclaw openclaw gateway status
+
+# Stop the container
+docker compose down
+
+# WARNING: deletes all data including machines, API keys, and token. Cannot be undone.
+docker compose down; Remove-Item -Recurse -Force .\data
 ```
 
 ---
