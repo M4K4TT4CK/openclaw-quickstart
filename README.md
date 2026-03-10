@@ -203,3 +203,46 @@ Want to move the data somewhere else? Override the paths in `docker-compose.yml`
 |---|---|
 | `OPENCLAW_STATE_DIR` | `/data/state` |
 | `OPENCLAW_CONFIG_PATH` | `/data/config/openclaw.json` |
+
+---
+
+## Building your first agent with ChatGPT
+
+Once your gateway is running and you have an OpenAI API key in Settings, you are ready to build an agent.
+
+### 1. Make sure your OpenAI key is set
+
+In the Control UI, go to **Settings** and add your OpenAI API key if you have not already. Select **OpenAI** as your provider and pick a model, `gpt-4o` is a solid starting point.
+
+### 2. Create a new agent
+
+In the Control UI, hit **New Agent** (or open the Agents panel). Give it a name, something like `My First Agent`. This creates a workspace for it under `./data/workspace/`.
+
+### 3. Give it a personality
+
+The best way to shape how your agent behaves is through a `SOUL.md` file. Think of it as a short brief you write for your agent: what it is for, how it should talk, what it should and should not do.
+
+You can edit it directly in the Control UI, or open it in your editor at:
+```
+./data/workspace/SOUL.md
+```
+
+Example to get you started:
+```markdown
+You are a helpful assistant called Max.
+You are concise, friendly, and never condescending.
+When you do not know something, you say so instead of guessing.
+```
+
+### 4. Start chatting
+
+That is genuinely it. Go back to the main chat view, select your agent, and start talking to it. Changes to `SOUL.md` take effect on the next message, so you can tune the personality without restarting anything.
+
+### 5. Persist memory across conversations (optional)
+
+OpenClaw agents can keep notes between sessions using a `MEMORY.md` file in their workspace. You can seed it manually or let the agent update it over time. It lives at:
+```
+./data/workspace/MEMORY.md
+```
+
+Anything you put in there gets loaded as context at the start of every conversation, so your agent can remember things like your name, preferences, or ongoing projects.
